@@ -340,7 +340,7 @@ MainWindow::MainWindow(Core::System& system, std::unique_ptr<BootParameters> boo
 
   if (script.has_value())
   {
-    m_scripting_widget->AddScript(script.value());
+    m_scripting_widget->AddScript(script.value(), true);
   }
 }
 
