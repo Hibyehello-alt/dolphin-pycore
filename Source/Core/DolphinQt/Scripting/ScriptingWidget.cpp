@@ -21,6 +21,7 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QTimer>
 
 #include "Common/FileUtil.h"
 #include "Common/MsgHandler.h"
@@ -56,11 +57,11 @@ ScriptingWidget::ScriptingWidget(QWidget* parent) : QDockWidget(parent)
 
 
   m_scripts_model = new ScriptsFileSystemModel();
-  QModelIndex rootIdx =
+  m_rootIdx =
       m_scripts_model->setRootPath(QString::fromStdString(File::GetUserPath(D_SCRIPTS_IDX)));
   m_tree = new QTreeView();
   m_tree->setModel(m_scripts_model);
-  m_tree->setRootIndex(rootIdx);
+  m_tree->setRootIndex(m_rootIdx);
   m_tree->setHeaderHidden(true);
   // Hide size/type/date columns
   m_tree->hideColumn(1);
@@ -78,6 +79,10 @@ ScriptingWidget::ScriptingWidget(QWidget* parent) : QDockWidget(parent)
   QWidget* main_widget = new QWidget;
   main_widget->setLayout(main_layout);
   this->setWidget(main_widget);
+
+  QTimer* timer = new QTimer(this);
+  connect(timer, &QTimer::timeout, this, &ScriptingWidget::UpdatePendingIcons);
+  timer->start(1000/60);
 
   connect(&Settings::Instance(), &Settings::ScriptingVisibilityChanged, this,
           &ScriptingWidget::setVisible);
@@ -142,6 +147,11 @@ void ScriptingWidget::ToggleSelectedScripts()
 {
   QModelIndex index = m_tree->currentIndex();
 
+  ToggleScriptIndex(index);
+}
+
+void ScriptingWidget::ToggleScriptIndex(QModelIndex index)
+{
   if (!index.isValid() || m_scripts_model->hasChildren(index))
     return;
 
@@ -151,6 +161,76 @@ void ScriptingWidget::ToggleSelectedScripts()
                            Qt::CheckStateRole);
 
   m_scripts_model->dataChanged(index, index, QList<int>(Qt::CheckStateRole));
+}
+
+void ScriptingWidget::ToggleScript(std::string filename)
+{
+  QModelIndex index = m_rootIdx;
+  while (index.isValid())
+  {
+    if ((m_scripts_model->fileName(index)).toStdString() == filename)
+      ToggleScriptIndex(index);
+    index = m_tree->indexBelow(index);
+  }
+}
+
+void ScriptingWidget::CheckScriptIndex(QModelIndex index)
+{
+  if (!index.isValid() || m_scripts_model->hasChildren(index))
+    return;
+
+  m_scripts_model->setData(index, Qt::Checked, Qt::CheckStateRole);
+
+  //m_scripts_model->dataChanged(index, index, QList<int>(Qt::CheckStateRole));
+}
+
+void ScriptingWidget::CheckScript(std::string filename)
+{
+  QModelIndex index = m_rootIdx;
+  while (index.isValid())
+  {
+    if ((m_scripts_model->fileName(index)).toStdString() == filename)
+      CheckScriptIndex(index);
+    index = m_tree->indexBelow(index);
+  }
+}
+
+void ScriptingWidget::UncheckScriptIndex(QModelIndex index)
+{
+  if (!index.isValid() || m_scripts_model->hasChildren(index))
+    return;
+
+  m_scripts_model->setData(index, Qt::Unchecked, Qt::CheckStateRole);
+
+  // m_scripts_model->dataChanged(index, index, QList<int>(Qt::CheckStateRole));
+}
+
+void ScriptingWidget::UncheckScript(std::string filename)
+{
+  QModelIndex index = m_rootIdx;
+  while (index.isValid())
+  {
+    if ((m_scripts_model->fileName(index)).toStdString() == filename)
+      UncheckScriptIndex(index);
+    index = m_tree->indexBelow(index);
+  }
+}
+
+void ScriptingWidget::UpdatePendingIcons()
+{
+  //std::list<std::string> pending_active_scripts = {};  // m_scripts_model->getPendingActive();
+
+  //while (!pending_active_scripts.empty())
+  //{
+  //  CheckScript(pending_active_scripts.front());
+  //  pending_active_scripts.pop_front();
+  //}
+
+  //while (!Scripts::g_pending_canceled_scripts.empty())
+  //{
+  //  UncheckScript(Scripts::g_pending_canceled_scripts.front());
+  //  Scripts::g_pending_canceled_scripts.pop_front();
+  //}
 }
 
 void ScriptingWidget::closeEvent(QCloseEvent*)
@@ -181,8 +261,8 @@ void ScriptingWidget::OnEmulationStateChanged(Core::State state)
     if (!QDir(QString::fromStdString(path)).exists())
       return;
     
-    QModelIndex rootIdx = m_scripts_model->setRootPath(QString::fromStdString(path));
-    m_tree->setRootIndex(rootIdx);
+    m_rootIdx = m_scripts_model->setRootPath(QString::fromStdString(path));
+    m_tree->setRootIndex(m_rootIdx);
 
     QString scripts_title = QString::fromStdString("Script Directory (" + game_id_prefix + ")");
     m_scripts_group->setTitle(scripts_title);
@@ -192,9 +272,9 @@ void ScriptingWidget::OnEmulationStateChanged(Core::State state)
   case Core::State::Uninitialized:
   {
     // Reset QTreeView to root scripts dir
-    QModelIndex rootIdx =
+    m_rootIdx =
         m_scripts_model->setRootPath(QString::fromStdString(File::GetUserPath(D_SCRIPTS_IDX)));
-    m_tree->setRootIndex(rootIdx);
+    m_tree->setRootIndex(m_rootIdx);
 
     m_scripts_group->setTitle(tr("Script Directory"));
 

@@ -113,6 +113,23 @@ bool ScriptsFileSystemModel::setData(const QModelIndex& index, const QVariant& v
   }
 }
 
+std::list<std::string> ScriptsFileSystemModel::getPendingActive()
+{
+  std::list<std::string> result = {};
+  for (auto it = Scripts::g_pending_activated_scripts.begin();
+       it != Scripts::g_pending_activated_scripts.end(); it++)
+  {
+    if (it->second)
+    {
+      result.push_front(it->first);
+      delete it->second;
+      it->second = nullptr;
+    }
+  }
+  
+  return result;
+}
+
 void ScriptsFileSystemModel::Restart(const QModelIndex& index)
 {
   if (!index.isValid())

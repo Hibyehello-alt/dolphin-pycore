@@ -25,6 +25,13 @@ public:
   void AddNewScript();
   void RestartSelectedScripts();
   void ToggleSelectedScripts();
+  void ToggleScriptIndex(QModelIndex index);
+  void ToggleScript(std::string filename);
+  void CheckScriptIndex(QModelIndex index);
+  void CheckScript(std::string filename);
+  void UncheckScriptIndex(QModelIndex index);
+  void UncheckScript(std::string filename);
+  void UpdatePendingIcons();
 
 protected:
   void closeEvent(QCloseEvent*) override;
@@ -45,4 +52,5 @@ private:
 
   ScriptsFileSystemModel* m_scripts_model;
   QTreeView* m_tree;
+  QModelIndex m_rootIdx;
 };
