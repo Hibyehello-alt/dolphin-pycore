@@ -82,7 +82,7 @@ static PyObject* SaveToBytes(PyObject* self, PyObject* args)
   // If State wasn't static, you'd get the state-manager instance from the module state:
   //SavestateModuleState* state = Py::GetState<SavestateModuleState>();
   std::vector<u8> buffer;
-  State::SaveToBuffer(Core::System::GetInstance(), buffer, false);
+  State::SaveToBufferLegacy(Core::System::GetInstance(), buffer, false);
   const u8* data = buffer.data();
   PyObject* pybytes = PyBytes_FromStringAndSize(reinterpret_cast<const char*>(data), buffer.size());
   if (pybytes == nullptr)
@@ -110,7 +110,8 @@ static PyObject* LoadFromBytes(PyObject* self, PyObject* args)
     return nullptr;
   // I don't understand where and why the buffer gets copied and why this is necessary...
   buffer.assign(data, data+length);
-  State::LoadFromBuffer(Core::System::GetInstance(), buffer, false);
+  // This crash the game so far idk why.
+  State::LoadFromBufferLegacy(Core::System::GetInstance(), buffer, false);
   Py_RETURN_NONE;
 }
 
