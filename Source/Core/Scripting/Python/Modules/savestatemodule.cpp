@@ -4,6 +4,7 @@
 
 #include "savestatemodule.h"
 
+#include "Common/Buffer.h"
 #include "Common/Logging/Log.h"
 #include "Core/State.h"
 #include "Core/Core.h"
@@ -81,8 +82,8 @@ static PyObject* SaveToBytes(PyObject* self, PyObject* args)
 {
   // If State wasn't static, you'd get the state-manager instance from the module state:
   //SavestateModuleState* state = Py::GetState<SavestateModuleState>();
-  std::vector<u8> buffer;
-  State::SaveToBufferLegacy(Core::System::GetInstance(), buffer, false);
+  Common::UniqueBuffer<u8> buffer;
+  State::SaveToBuffer(Core::System::GetInstance(), buffer, false);
   const u8* data = buffer.data();
   PyObject* pybytes = PyBytes_FromStringAndSize(reinterpret_cast<const char*>(data), buffer.size());
   if (pybytes == nullptr)
@@ -103,7 +104,7 @@ static PyObject* LoadFromBytes(PyObject* self, PyObject* args)
   PyObject* pybytes = (PyObject*)std::get<0>(bytes_opt.value());
   auto length = PyBytes_Size(pybytes);
 
-  std::vector<u8> buffer(length, 0);
+  Common::UniqueBuffer<u8> buffer(length);
   u8* data = buffer.data();
   int result = PyBytes_AsStringAndSize(pybytes, reinterpret_cast<char**>(&data), &length);
   if (result == -1)
@@ -111,7 +112,7 @@ static PyObject* LoadFromBytes(PyObject* self, PyObject* args)
   // I don't understand where and why the buffer gets copied and why this is necessary...
   buffer.assign(data, data+length);
   // This crash the game so far idk why.
-  State::LoadFromBufferLegacy(Core::System::GetInstance(), buffer, false);
+  State::LoadFromBuffer(Core::System::GetInstance(), buffer, false);
   Py_RETURN_NONE;
 }
 
