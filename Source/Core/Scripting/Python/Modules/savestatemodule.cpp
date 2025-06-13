@@ -110,7 +110,7 @@ static PyObject* LoadFromBytes(PyObject* self, PyObject* args)
   if (result == -1)
     return nullptr;
   // I don't understand where and why the buffer gets copied and why this is necessary...
-  buffer.assign(data, length);
+  buffer.assign(std::unique_ptr<std::uint8_t[]>(data), length);
   // This crash the game so far idk why.
   State::LoadFromBuffer(Core::System::GetInstance(), buffer, false);
   Py_RETURN_NONE;
