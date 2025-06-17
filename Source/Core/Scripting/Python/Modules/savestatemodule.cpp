@@ -4,6 +4,8 @@
 
 #include "savestatemodule.h"
 
+#include <memory>
+
 #include "Common/Buffer.h"
 #include "Common/Logging/Log.h"
 #include "Core/State.h"
