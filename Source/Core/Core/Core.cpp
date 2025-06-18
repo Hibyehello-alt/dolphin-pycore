@@ -736,7 +736,8 @@ void SetState(Core::System& system, State state, bool report_state_change,
     break;
   case State::Running:
   {
-    API::GetEventHub().EmitEvent(API::Events::Unpause{});
+    // Commenting out the event since it's unused
+    //API::GetEventHub().EmitEvent(API::Events::Unpause{});
     system.GetCPU().SetStepping(false);
     Wiimote::Resume();
     break;

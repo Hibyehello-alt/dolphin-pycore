@@ -167,16 +167,17 @@ void Host::SetRenderFocus(bool focus)
         g_gfx->SetFullscreen(focus);
     });
   }
+  // Blounard : Can maybe cause crash so i'm commenting it out for now
   //Not sure how to emit this event correctly to avoid crashes.
-  Core::QueueHostJob([focus](Core::System& system) {
-    Core::RunOnCPUThread(
-        system,
-        [&] {
-          API::GetEventHub().EmitEvent(API::Events::FocusChange{focus});
-        },
-        true);
-    
-  });
+  //Core::QueueHostJob([focus](Core::System& system) {
+  //  Core::RunOnCPUThread(
+  //      system,
+  //      [&] {
+  //        API::GetEventHub().EmitEvent(API::Events::FocusChange{focus});
+  //      },
+  //      true);
+  //  
+  //});
   
 }
 
@@ -186,14 +187,15 @@ void Host::SetRenderGeometry(int x, int y, int width, int height)
   m_render_y = y;
   m_render_width = width;
   m_render_height = height;
-  Core::QueueHostJob([x, y, width, height](Core::System& system) {
-    Core::RunOnCPUThread(
-        system,
-        [&] {
-          API::GetEventHub().EmitEvent(API::Events::RenderGeometryChange{x, y, width, height});
-        },
-        true);
-  });
+  // Blounard : Can maybe cause crash so i'm commenting it out for now
+  //Core::QueueHostJob([x, y, width, height](Core::System& system) {
+  //  Core::RunOnCPUThread(
+  //      system,
+  //      [&] {
+  //        API::GetEventHub().EmitEvent(API::Events::RenderGeometryChange{x, y, width, height});
+  //      },
+  //      true);
+  //});
   
 }
 
