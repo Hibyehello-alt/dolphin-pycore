@@ -1037,7 +1037,8 @@ bool MainWindow::RequestStop()
     // Tell NetPlay about the power event
     if (NetPlay::IsNetPlayRunning())
       NetPlay::SendPowerButtonEvent();
-    MainWindow::RequestStop();
+    QTimer::singleShot(1000, this, &MainWindow::RequestStop);
+    //MainWindow::RequestStop();
 
     return true;
   }
