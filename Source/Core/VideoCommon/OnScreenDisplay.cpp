@@ -17,10 +17,12 @@
 #include "Common/Timer.h"
 
 #include "Core/Config/MainSettings.h"
+#include "Core/Core.h"
 
 #include "VideoCommon/AbstractGfx.h"
 #include "VideoCommon/AbstractTexture.h"
 #include "VideoCommon/Assets/CustomTextureData.h"
+#include "VideoCommon/Present.h"
 #include "VideoCommon/TextureConfig.h"
 
 namespace OSD
@@ -146,10 +148,20 @@ void AddTypedMessage(MessageType type, std::string message, u32 ms, u32 argb,
 }
 
 void AddMessage(std::string message, u32 ms, u32 argb,
-                const VideoCommon::CustomTextureData::ArraySlice::Level* icon)
+                const VideoCommon::CustomTextureData::ArraySlice::Level* icon,
+                bool present)
 {
   std::lock_guard lock{s_messages_mutex};
   s_messages.emplace(MessageType::Typeless, Message(std::move(message), ms, argb, std::move(icon)));
+  if (present && Config::Get(Config::MAIN_REMOVE_UI_DELAY))
+    Core::QueueHostJob([&](Core::System& system) {
+          Core::RunOnCPUThread(
+              system,
+              [] {
+                  g_presenter->Present();
+              },
+              true);
+      }, true);
 }
 
 void DrawMessages()
