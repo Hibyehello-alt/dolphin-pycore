@@ -135,10 +135,14 @@ bool BootCore(Core::System& system, std::unique_ptr<BootParameters> boot,
     }
   }
 
-  // Some NTSC Wii games such as Doc Louis's Punch-Out!! and
-  // 1942 (Virtual Console) crash if the PAL60 option is enabled
-  if (system.IsWii() && DiscIO::IsNTSC(StartUp.m_region) && Config::Get(Config::SYSCONF_PAL60))
-    Config::SetCurrent(Config::SYSCONF_PAL60, false);
+  // Blounard : this effect cause the game to remove the PAL60 setting if you start a NTSC
+  // game, and then crash. For now, i'll remove it, since  MKW
+  // works with NTSC and PAL60 option enabled
+  // 
+  //// Some NTSC Wii games such as Doc Louis's Punch-Out!! and
+  //// 1942 (Virtual Console) crash if the PAL60 option is enabled
+  //if (system.IsWii() && DiscIO::IsNTSC(StartUp.m_region) && Config::Get(Config::SYSCONF_PAL60))
+  //  Config::SetCurrent(Config::SYSCONF_PAL60, false);
 
   // Disable loading time emulation for Riivolution-patched games until we have proper emulation.
   if (!boot->riivolution_patches.empty())
