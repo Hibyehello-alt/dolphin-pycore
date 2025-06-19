@@ -9,8 +9,8 @@
 #include <functional>
 #include <string>
 #include <type_traits>
-#include <vector>
 
+#include "Common/Buffer.h"
 #include "Common/CommonTypes.h"
 
 namespace Core
@@ -108,8 +108,10 @@ void LoadAs(Core::System& system, const std::string& filename, bool is_slot, int
 void SaveFile(Core::System& system, const std::string& filename, bool wait, bool emit_event);
 void LoadFile(Core::System& system, const std::string& filename, bool emit_event);
 
-void SaveToBuffer(Core::System& system, std::vector<u8>& buffer, bool emit_event);
-void LoadFromBuffer(Core::System& system, std::vector<u8>& buffer, bool emit_event);
+void SaveToBuffer(Core::System& system, Common::UniqueBuffer<u8>& buffer, bool emit_event);
+void LoadFromBuffer(Core::System& system, const Common::UniqueBuffer<u8>& buffer, bool emit_event);
+void SaveToBufferLegacy(Core::System& system, std::vector<u8>& buffer, bool emit_event);
+void LoadFromBufferLegacy(Core::System& system, std::vector<u8>& buffer, bool emit_event);
 
 void LoadLastSaved(Core::System& system, int i = 1);
 void SaveFirstSaved(Core::System& system);
