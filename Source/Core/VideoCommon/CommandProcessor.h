@@ -182,7 +182,7 @@ public:
   void SetCpStatusRegister();
   void ResetFifo();
 
-  void HandleUnknownOpcode(Core::System& system, u8 cmd_byte, const u8* buffer, bool preprocess);
+  void HandleUnknownOpcode(u8 cmd_byte, const u8* buffer, bool preprocess);
 
   // This one is shared between gfx thread and emulator thread.
   // It is only used by the Fifo and by the CommandProcessor.

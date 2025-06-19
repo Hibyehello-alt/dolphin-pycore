@@ -1429,15 +1429,6 @@ void MovieManager::CallWiiInputManip(DataReportBuilder& rpt, int controllerID, i
     m_wii_manip_func(rpt, controllerID, ext, key);
 }
 
-// NOTE: GPU Thread
-void MovieManager::SetGraphicsConfig()
-{
-  g_Config.bEFBAccessEnable = m_temp_header.bEFBAccessEnable;
-  g_Config.bSkipEFBCopyToRam = m_temp_header.bSkipEFBCopyToRam;
-  g_Config.bEFBEmulateFormatChanges = m_temp_header.bEFBEmulateFormatChanges;
-  g_Config.bImmediateXFB = m_temp_header.bImmediateXFB;
-  g_Config.bSkipXFBCopyToRam = m_temp_header.bSkipXFBCopyToRam;
-}
 
 // NOTE: EmuThread / Host Thread
 void MovieManager::GetSettings()

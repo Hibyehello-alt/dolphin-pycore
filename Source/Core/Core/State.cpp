@@ -233,7 +233,7 @@ void LoadFromBufferLegacy(Core::System& system, std::vector<u8>& buffer, bool em
         true);
 }
 
-void LoadFromBuffer(Core::System& system, Common::UniqueBuffer<u8>& buffer)
+void LoadFromBuffer(Core::System& system, Common::UniqueBuffer<u8>& buffer, bool emit_event)
 {
   if (NetPlay::IsNetPlayRunning())
   {
@@ -284,7 +284,7 @@ void SaveToBufferLegacy(Core::System& system, std::vector<u8>& buffer, bool emit
 }
 
 
-void SaveToBuffer(Core::System& system, Common::UniqueBuffer<u8>& buffer)
+void SaveToBuffer(Core::System& system, Common::UniqueBuffer<u8>& buffer, bool emit_event)
 {
   Core::RunOnCPUThread(
       system,
