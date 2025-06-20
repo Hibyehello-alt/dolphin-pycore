@@ -40,6 +40,7 @@ bool BreakPoints::IsBreakPointEnable(u32 address) const
 
 const TBreakPoint* BreakPoints::GetBreakpoint(u32 address) const
 {
+  //API::GetEventHub().EmitEvent(API::Events::CodeBreakpoint{address});
   // Give priority to the temporary breakpoint (it could be in the same address of a regular
   // breakpoint that doesn't break)
   if (m_temp_breakpoint && m_temp_breakpoint->address == address)

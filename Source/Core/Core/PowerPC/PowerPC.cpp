@@ -636,6 +636,8 @@ bool PowerPCManager::CheckBreakPoints()
   if (!bp || !bp->is_enabled || !EvaluateCondition(m_system, bp->condition))
     return false;
 
+  API::GetEventHub().EmitEvent(API::Events::CodeBreakpoint{bp->address});
+
   if (bp->log_on_hit)
   {
     NOTICE_LOG_FMT(MEMMAP,
@@ -648,7 +650,6 @@ bool PowerPCManager::CheckBreakPoints()
   }
   if (bp->break_on_hit)
   {
-    API::GetEventHub().EmitEvent(API::Events::CodeBreakpoint{m_ppc_state.pc});
     return true;
   }
   return false;
